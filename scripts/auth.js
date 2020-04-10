@@ -1,3 +1,13 @@
+// add admin cloud function
+const adminForm = document.querySelector(".admin-actions");
+
+adminForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const adminEmail = adminForm["admin-email"].value;
+  const adminRole = functions.httpsCallable("addAdminRole");
+  adminRole({ email: adminEmail }).then(console.log);
+});
+
 // track auth status
 let unsubscribe = null;
 auth.onAuthStateChanged((user) => {
