@@ -1,4 +1,15 @@
-//signup
+// track auth status
+auth.onAuthStateChanged((user) => {
+  if (user) {
+    db.collection("guides")
+      .get()
+      .then((snapshot) => {
+        setupGuides(snapshot.docs);
+      });
+  } else setupGuides([]);
+});
+
+// signup
 const signupForm = document.querySelector("#signup-form");
 signupForm.addEventListener("submit", (event) => {
   event.preventDefault();
@@ -16,10 +27,10 @@ signupForm.addEventListener("submit", (event) => {
 const logout = document.querySelector("#logout");
 logout.addEventListener("click", (e) => {
   e.preventDefault();
-  auth.signOut().then(() => console.log("User signed out."));
+  auth.signOut();
 });
 
-//login
+// login
 const loginForm = document.querySelector("#login-form");
 loginForm.addEventListener("submit", (e) => {
   e.preventDefault();
@@ -27,7 +38,6 @@ loginForm.addEventListener("submit", (e) => {
   const password = loginForm["login-password"].value;
 
   auth.signInWithEmailAndPassword(email, password).then((cred) => {
-    console.log(cred.user);
     const modal = document.querySelector("#modal-login");
     M.Modal.getInstance(modal).close();
     loginForm.reset();
