@@ -3,9 +3,12 @@ let unsubscribe = null;
 auth.onAuthStateChanged((user) => {
   setupUI(user);
   if (user) {
-    unsubscribe = db.collection("guides").onSnapshot((snapshot) => {
-      setupGuides(snapshot.docs);
-    });
+    unsubscribe = db.collection("guides").onSnapshot(
+      (snapshot) => {
+        setupGuides(snapshot.docs);
+      },
+      (err) => console.log(err.message)
+    );
   } else {
     if (unsubscribe) unsubscribe();
     setupGuides([]);
@@ -34,12 +37,16 @@ signupForm.addEventListener("submit", (event) => {
   event.preventDefault();
   const email = signupForm["signup-email"].value;
   const password = signupForm["signup-password"].value;
+  const bio = signupForm["signup-bio"].value;
 
-  auth.createUserWithEmailAndPassword(email, password).then((cred) => {
-    const modal = document.querySelector("#modal-signup");
-    M.Modal.getInstance(modal).close();
-    signupForm.reset();
-  });
+  auth
+    .createUserWithEmailAndPassword(email, password)
+    .then((cred) => db.collection("users").doc(cred.user.uid).set({ bio }))
+    .then(() => {
+      const modal = document.querySelector("#modal-signup");
+      M.Modal.getInstance(modal).close();
+      signupForm.reset();
+    });
 });
 
 // logout
