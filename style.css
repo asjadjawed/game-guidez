@@ -1,0 +1,9 @@
+.logged-in,
+.logged-out {
+  display: none;
+}
+
+.admin-actions {
+  margin: 40px auto;
+  max-width: 300px;
+}
