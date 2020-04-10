@@ -10,6 +10,22 @@ auth.onAuthStateChanged((user) => {
   } else setupGuides([]);
 });
 
+// create new guide
+const createForm = document.querySelector("#create-form");
+createForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const title = createForm["title"].value;
+  const content = createForm["content"].value;
+  db.collection("guides")
+    .add({ title, content })
+    .then(() => {
+      const modal = document.querySelector("#modal-create");
+      M.Modal.getInstance(modal).close();
+      createForm.reset();
+    })
+    .catch((error) => console.log(error.message));
+});
+
 // signup
 const signupForm = document.querySelector("#signup-form");
 signupForm.addEventListener("submit", (event) => {
