@@ -1,11 +1,15 @@
 // track auth status
+let unsubscribe = null;
 auth.onAuthStateChanged((user) => {
   setupUI(user);
   if (user) {
-    db.collection("guides").onSnapshot((snapshot) => {
+    unsubscribe = db.collection("guides").onSnapshot((snapshot) => {
       setupGuides(snapshot.docs);
     });
-  } else setupGuides([]);
+  } else {
+    if (unsubscribe) unsubscribe();
+    setupGuides([]);
+  }
 });
 
 // create new guide
