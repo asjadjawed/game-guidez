@@ -1,5 +1,6 @@
 .logged-in,
-.logged-out {
+.logged-out,
+.admin {
   display: none;
 }
 

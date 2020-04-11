@@ -5,14 +5,20 @@ adminForm.addEventListener("submit", (e) => {
   e.preventDefault();
   const adminEmail = adminForm["admin-email"].value;
   const adminRole = functions.httpsCallable("addAdminRole");
-  adminRole({ email: adminEmail }).then(console.log);
+  adminRole({ email: adminEmail }).then((data) => {
+    if (data.data.message) adminForm.reset();
+  });
 });
 
 // track auth status
 let unsubscribe = null;
 auth.onAuthStateChanged((user) => {
-  setupUI(user);
   if (user) {
+    user.getIdTokenResult().then((IdTokenResult) => {
+      user.admin = IdTokenResult.claims.admin;
+      setupUI(user);
+    });
+
     unsubscribe = db.collection("guides").onSnapshot(
       (snapshot) => {
         setupGuides(snapshot.docs);
@@ -21,6 +27,7 @@ auth.onAuthStateChanged((user) => {
     );
   } else {
     if (unsubscribe) unsubscribe();
+    setupUI(user);
     setupGuides([]);
   }
 });
@@ -64,6 +71,7 @@ const logout = document.querySelector("#logout");
 logout.addEventListener("click", (e) => {
   e.preventDefault();
   auth.signOut();
+  document.querySelectorAll("form").forEach((form) => form.reset());
 });
 
 // login
